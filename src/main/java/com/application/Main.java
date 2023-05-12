@@ -5,34 +5,48 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) {
         // 문제 테스트 데이터
-        int n = 5;
-        int[] lost = {4, 2};
-        int[] reserve = {3, 5};
+        int n = 7;
+        int[] lost = {2, 4, 7};
+        int[] reserve = {1, 3, 5};
 
-        // 1 1 1 1 0 2
+        // 2 0 2 0 2 1 0
 
-        int result = 0;
-        int[] now = new int[n];
+        int resultCanA = 0;
+        int resultCanB = 0;
+        int[] nowCanA = new int[n];
+        int[] nowCanB = new int[n];
 
         for (int i = 0; i < n; i++) {
-            now[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
+            nowCanA[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
+            nowCanB[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
         }
 
         for (int i = 0; i < n; i++) {
-            if (now[i] == 2) {
-                int wPriority = priority(i, now);
+            if (nowCanA[i] == 2) {
+                int wPriority = priority(i, nowCanA);
                 if (wPriority != 0) {
-                    now[i + wPriority] = 1;
-                    now[i] = 1;
+                    nowCanA[i + wPriority] = 1;
+                    nowCanA[i] = 1;
+                }
+            }
+            int rev = n - 1 - i;
+            if (nowCanB[rev] == 2) {
+                int wPriority = priority(rev, nowCanB);
+                if (wPriority != 0) {
+                    nowCanB[rev + wPriority] = 1;
+                    nowCanB[rev] = 1;
                 }
             }
         }
 
         for (int i = 0; i < n; i++) {
-            if (now[i] > 0) result++;
+            if (nowCanA[i] > 0) resultCanA++;
+            if (nowCanB[i] > 0) resultCanB++;
         }
 
-        System.out.println(result);
+        System.out.println(resultCanA > resultCanB ? resultCanA : resultCanB);
+
+//        System.out.println(result);
     }
 
     public static boolean isLost(int num, int[] lost) {
