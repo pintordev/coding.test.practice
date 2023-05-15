@@ -5,48 +5,58 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) {
         // 문제 테스트 데이터
-        int n = 7;
-        int[] lost = {2, 4, 7};
-        int[] reserve = {1, 3, 5};
+        int n = 5;
+        int[] lost = {2, 4, 5};
+        int[] reserve = {3};
 
-        // 2 0 2 0 2 1 0
+        // 1 0 2 0 0
 
-        int resultCanA = 0;
-        int resultCanB = 0;
-        int[] nowCanA = new int[n];
-        int[] nowCanB = new int[n];
+        int result = 0;
+        int[] now = new int[n];
 
         for (int i = 0; i < n; i++) {
-            nowCanA[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
-            nowCanB[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
+            now[i] = calNow(isLost(i + 1, lost), isReserve(i + 1, reserve));
         }
 
-        for (int i = 0; i < n; i++) {
-            if (nowCanA[i] == 2) {
-                int wPriority = priority(i, nowCanA);
-                if (wPriority != 0) {
-                    nowCanA[i + wPriority] = 1;
-                    nowCanA[i] = 1;
+        for (int i = 0; i <= n; i++) {
+            int[] nowLocal = now.clone();
+            int resultLocal = 0;
+
+            for (int j = i - 1; j >= 0; j--) {
+                if (nowLocal[j] == 2) {
+                    int wPriority = priority(j, nowLocal);
+                    if (wPriority != 0) {
+                        nowLocal[j + wPriority] = 1;
+                        nowLocal[j] = 1;
+                    }
                 }
             }
-            int rev = n - 1 - i;
-            if (nowCanB[rev] == 2) {
-                int wPriority = priority(rev, nowCanB);
-                if (wPriority != 0) {
-                    nowCanB[rev + wPriority] = 1;
-                    nowCanB[rev] = 1;
+
+            for (int j = i; j < n; j++) {
+                if (nowLocal[j] == 2) {
+                    int wPriority = priority(j, nowLocal);
+                    if (wPriority != 0) {
+                        nowLocal[j + wPriority] = 1;
+                        nowLocal[j] = 1;
+                    }
                 }
             }
+
+            System.out.printf("case #%d:", i);
+            for (int j = 0; j < n; j++) {
+                System.out.printf(" %d", nowLocal[j]);
+                if (j != n - 1) {
+                    System.out.printf(",");
+                } else {
+                    System.out.println("");
+                }
+                if (nowLocal[j] > 0) resultLocal++;
+            }
+
+            result = Math.max(result, resultLocal);
         }
 
-        for (int i = 0; i < n; i++) {
-            if (nowCanA[i] > 0) resultCanA++;
-            if (nowCanB[i] > 0) resultCanB++;
-        }
-
-        System.out.println(resultCanA > resultCanB ? resultCanA : resultCanB);
-
-//        System.out.println(result);
+        System.out.println(result);
     }
 
     public static boolean isLost(int num, int[] lost) {
